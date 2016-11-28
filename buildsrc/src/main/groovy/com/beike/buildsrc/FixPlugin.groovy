@@ -2,9 +2,10 @@ package com.beike.buildsrc
 
 import com.android.build.gradle.internal.pipeline.TransformTask
 import com.android.build.gradle.internal.transforms.ProGuardTransform
+import groovy.io.FileType
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task;
+import org.gradle.api.Task
 
 public class FixPlugin implements Plugin<Project>{
 
@@ -53,6 +54,17 @@ public class FixPlugin implements Plugin<Project>{
                 proguardDebugClosure(proguardDebug)
             }
 
+            if (dexRelease){
+                dexReleaseClosure(dexRelease)
+            }
+
+            if (dexDebug){
+                if (!debugOn && !generatePatch){
+
+                }else {
+                    dexDebugClosure(dexDebug)
+                }
+            }
         }
 
     }
@@ -83,6 +95,88 @@ public class FixPlugin implements Plugin<Project>{
                 throw new IllegalStateException(tips)
             }
             minify = true
+        }
+    }
+
+    def dexDebugClosure = { Task dexDebug ->
+        dexDebug.outputs.upToDateWhen { false }
+
+        dexDebug.doFirst {
+            Map<String, String> md5Map
+            //是否生成补丁包
+            if (generatePatch) {
+                //clear previous patch
+                File file = new File(patchDir)
+                if (file.exists()){
+                    FixUtils.cleanDirectory(file)
+                }
+
+                //resolve hash.txt (entry-> className:md5)
+                File hashFile = new File(FixUtils.hashPath)
+                if (hashFile.exists()){
+                    md5Map = FixUtils.resolveHashFile(hashFile)
+                } else {
+                    String tips = "hash.txt not found, you must run 'Generate Signed Apk' at first or setting generatePath false"
+                    throw new IllegalStateException(tips)
+                }
+
+            }
+
+            if (minify){
+                dexDebug.inputs.files.files.each { File file ->
+                    file.eachFileRecurse(FileType.FILES, {File f ->
+                        if (f.absolutePath.endsWith('.jar')){
+                            FixUtils.processJar(f, debugOn, generatePatch, md5Map, patchDir, true)
+                        }
+                    })
+                }
+            }else {
+                dexDebug.inputs.files.files.each {File file ->
+                    if (file.name.endsWith('.jar') && FixUtils.shouldProcessJar(file.absolutePath)){
+                        FixUtils.processJar(file, debugOn, generatePatch, md5Map, patchDir, false)
+                    }else if (file.isDirectory()){
+                        FixUtils.processDir(file, debugOn, generatePatch, md5Map, patchDir, false)
+                    }
+                }
+            }
+
+            if (generatePatch){
+                FixUtils.dx(project, patchDir, patchName)
+                FixUtils.signApk(new File(patchDir, patchName),storeFile,keyPassword,storePassword,keyAlias)
+            }
+        }
+    }
+
+    def dexReleaseClosure = { Task dexRelease ->
+        // not up-to-date
+        // http://stackoverflow.com/questions/7289874/resetting-the-up-to-date-property-of-gradle-tasks
+        dexRelease.outputs.upToDateWhen { false }
+
+        //generate hash.txt and inject code in .class
+        dexRelease.doFirst {
+            File hashFile = FixUtils.createHashFile()
+            def writer = hashFile.newPrintWriter()
+
+            // if minify, outputs always is endsWith .jar in "build/intermediates/transforms/proguard/……"
+            // else, inputs directory path is "build/intermediates/classes/……"
+            if (minify){
+                dexRelease.inputs.files.files.each { File file ->
+                    file.eachFileRecurse(FileType.FILES, {File f ->
+                        if (f.absolutePath.endsWith('.jar')){
+                            FixUtils.processJar(f, writer, true)
+                        }
+                    })
+                }
+            }else {
+                dexRelease.inputs.files.files.each { File file ->
+                    if (file.name.endsWith('.jar') && FixUtils.shouldProcessJar(file.absolutePath)){
+                        FixUtils.processJar(file, writer, false)
+                    }else {
+                        FixUtils.processDir(file, writer)
+                    }
+                }
+            }
+            writer.close()
         }
     }
 }

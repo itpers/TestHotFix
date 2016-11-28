@@ -23,5 +23,5 @@ public class FixExtension {
     /**
      * 补丁的名字
      */
-    String patchName = "patch.jar"
+    String patchName = "patch_dex.jar"
 }
