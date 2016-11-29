@@ -171,7 +171,7 @@ public class FixPlugin implements Plugin<Project>{
                 dexRelease.inputs.files.files.each { File file ->
                     if (file.name.endsWith('.jar') && FixUtils.shouldProcessJar(file.absolutePath)){
                         FixUtils.processJar(file, writer, false)
-                    }else {
+                    }else if (file.isDirectory()){
                         FixUtils.processDir(file, writer)
                     }
                 }

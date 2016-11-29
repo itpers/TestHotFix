@@ -7,6 +7,6 @@ package com.beike.testhotfix.model;
 public class People {
 
     public String say(){
-        return "正确正确！！！！";
+        return "这才是真正的正确！！！！";
     }
 }
