@@ -17,17 +17,17 @@ public class FixUtils {
     static ClassPool classPool = ClassPool.default
 
     //匹配jar包的路径，如果包含集合中的路径，不注入代码，不生成MD5
-    static List noProcessJarPath = ['com.android.support', 'com\\android\\support\\']
-    static List noProcessClsPath = ['android\\support\\', '$', 'R.class', 'BuildConfig.class']
-    static List noProcessClsName = ['com.beike.hotfixlib.AssetsUtil', 'com.beike.hotfixlib.HotPatch', 'com.beike.hotfixlib.ReflectUtil', 'com.beike.testhotfix.MyApplication']
+    static List noProcessJarPath = ['com.android.support', 'com' + File.separator +'android' + File.separator +'support' + File.separator]
+    static List noProcessClsPath = ['android' + File.separator +'support' + File.separator, '$', 'R.class', 'BuildConfig.class']
+    static List noProcessClsName = ['com.beike.hotfixlib.AssetsUtil', 'com.beike.hotfixlib.HotPatch', 'com.beike.hotfixlib.ReflectUtil', 'com.beike.hotfixlib.SignatureVerify', 'com.beike.testhotfix.MyApplication']
 
     static String hashPath;
     static String mappingPath;
     static String sdkDir;
 
     static init(Project project){
-        hashPath = project.projectDir.absolutePath + "\\hash.txt"
-        mappingPath = project.projectDir.absolutePath + "\\mapping.txt"
+        hashPath = project.projectDir.absolutePath + File.separator + "hash.txt"
+        mappingPath = project.projectDir.absolutePath + File.separator + "mapping.txt"
 
         initJavassist(project)
 
@@ -44,8 +44,8 @@ public class FixUtils {
         sdkDir = prop.getProperty("sdk.dir")
 
         String version = project.android.compileSdkVersion
-        String androidJar = sdkDir + "\\" + "platforms\\" + version + "\\android.jar"
-        String apacheJar = sdkDir + "\\" + "platforms\\" + version + "\\optional\\org.apache.http.legacy.jar"
+        String androidJar = sdkDir + File.separator + "platforms" + File.separator + version + File.separator + "android.jar"
+        String apacheJar = sdkDir + File.separator + "platforms" + File.separator + version + File.separator + "optional" + File.separator + "org.apache.http.legacy.jar"
         if (new File(androidJar).exists()){
             classPool.appendClassPath(androidJar)
         }
@@ -53,7 +53,7 @@ public class FixUtils {
             classPool.appendClassPath(apacheJar)
         }
 
-        def libPath = project.rootDir.absolutePath.concat("\\hack_dex.jar")
+        def libPath = project.rootDir.absolutePath.concat(File.separator + "hack.jar")
         classPool.appendClassPath(libPath)
     }
 
@@ -107,8 +107,10 @@ public class FixUtils {
             if (minify && map != null && map.size() > 0){
                 value = map.get(value, value)
             }
-            value = value.replace('.', '\\')
+            value = value.replace('.', File.separator)
+            println 'xxxxxxxxxx==  filePath = ' + filePath + "   value = " + value
             if (filePath.contains(value)){
+                println 'xxxxxxxxxx---->  filePath = ' + filePath + '   value = ' + value
                 return false
             }
         }
@@ -169,7 +171,7 @@ public class FixUtils {
     static String getClassName(File parent, File c){
         def cPath = c.absolutePath
         def pPath = parent.absolutePath
-        return cPath.substring(pPath.length() + 1, cPath.length() - 6).replace('\\', '.').replace('/', '.')
+        return cPath.substring(pPath.length() + 1, cPath.length() - 6).replace(File.separator, '.').replace('/', '.')
     }
 
     /**
@@ -218,9 +220,9 @@ public class FixUtils {
                 String buildTool = project.android.buildToolsVersion
                 def stdout = new ByteArrayOutputStream()
                 project.exec {
-                    workingDir "$sdkDir\\build-tools\\$buildTool"
-                    commandLine 'dx.bat', '--dex', '--output', "$patchDir\\$patchName", patchDir
-                    standarOutput = stdout
+                    workingDir "$sdkDir" + File.separator + "build-tools" + File.separator + "$buildTool"
+                    commandLine 'dx.bat', '--dex', '--output', "$patchDir" + File.separator + "$patchName", patchDir
+                    standardOutput = stdout
                 }
                 def error = stdout.toString().trim()
                 if (error){
@@ -329,7 +331,7 @@ public class FixUtils {
         reader.eachLine { line ->
             if (line.endsWith(':')){
                 line = line.replace(':', '')
-                String[] strs = line.split('->')
+                String[] strs = line.split(' -> ')
                 map.put(strs[0], strs[1])
             }
         }
@@ -380,7 +382,7 @@ public class FixUtils {
                     String value = md5Map.get(className);
                     if (!md5.equals(value)){
                         String pkg = className.substring(0, className.lastIndexOf('.'))
-                        String dest = "$patchDir\\${pkg.replace('.', '\\')}\\$f.name"
+                        String dest = "$patchDir" + File.separator + "${pkg.replace('.', File.separator)}" + File.separator + "$f.name"
                         copyFile(f, new File(dest))
                     }
                 }
@@ -421,7 +423,7 @@ public class FixUtils {
                     String value = md5Map.get(className)
                     if (!md5.equals(value)) {
                         String pkg = className.substring(0, className.lastIndexOf('.'))
-                        String dest = "$patchDir\\${pkg.replace('.', '\\')}\\$f.name"
+                        String dest = "$patchDir" + File.separator + "${pkg.replace('.', File.separator)}" + File.separator + "$f.name"
                         copyFile(f, new File(dest))
                     }
                 }

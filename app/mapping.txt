@@ -8590,15 +8590,29 @@ com.beike.hotfixlib.AssetsUtil -> com.beike.a.a:
     void copyAssets(android.content.Context,java.lang.String,java.lang.String) -> a
 com.beike.hotfixlib.HotPatch -> com.beike.a.b:
     android.content.Context mContext -> a
+    com.beike.hotfixlib.SignatureVerify signatureCheck -> b
     void init(android.content.Context) -> a
-    void inject(java.lang.String) -> a
+    void inject(java.lang.String,boolean) -> a
+    boolean hasDexClassLoader() -> a
+    void injectDexClassLoader(java.lang.String) -> a
 com.beike.hotfixlib.ReflectUtil -> com.beike.a.c:
     java.lang.Object getField(java.lang.Class,java.lang.String,java.lang.Object) -> a
     void setField(java.lang.Class,java.lang.String,java.lang.Object,java.lang.Object) -> a
     java.lang.Object combineArray(java.lang.Object,java.lang.Object) -> a
+com.beike.hotfixlib.SignatureVerify -> com.beike.a.d:
+    javax.security.auth.x500.X500Principal DEBUG_DN -> a
+    boolean mDebuggable -> b
+    java.security.PublicKey mPublicKey -> c
+    void <init>(android.content.Context) -> <init>
+    void init(android.content.Context) -> a
+    boolean verifyApk(java.io.File) -> a
+    boolean check(java.io.File,java.security.cert.Certificate[]) -> a
+    void loadDigestes(java.util.jar.JarFile,java.util.jar.JarEntry) -> a
+    void <clinit>() -> <clinit>
 com.beike.testhotfix.MyApplication -> com.beike.testhotfix.MyApplication:
     void <init>() -> <init>
     void onCreate() -> onCreate
+    void attachBaseContext(android.content.Context) -> attachBaseContext
 com.beike.testhotfix.activity.MainActivity -> com.beike.testhotfix.activity.MainActivity:
     android.widget.Button btTest -> m
     com.beike.testhotfix.model.People people -> n

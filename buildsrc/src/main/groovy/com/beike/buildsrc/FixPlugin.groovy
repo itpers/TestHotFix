@@ -76,7 +76,7 @@ public class FixPlugin implements Plugin<Project>{
 
         //copy mapping.txt to app rootDir
         proguardRelease.doLast {
-            File file = new File("$project.buildDir\\outputs\\mapping\\release\\mapping.txt")
+            File file = new File("$project.buildDir" + File.separator + "outputs" + File.separator + "mapping" + File.separator + "release" + File.separator + "mapping.txt")
             if (file.exists()) {
                 FixUtils.copyFile(file, new File(project.projectDir, "mapping.txt"))
             }

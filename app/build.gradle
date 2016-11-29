@@ -22,37 +22,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-//    applicationVariants.all { variant->
-//        def dexTask = project.tasks.findByName("transformClassesWithDexForDebug")
-//        def preDexTask = project.tasks.findByName("transformClassesWithPreDexForDebug")
-//        if(preDexTask) {
-//            project.logger.error "======preDexTask======"
-//            preDexTask.inputs.files.files.each {file ->
-//                project.logger.error "inputs =$file.absolutePath"
-//            }
-//
-//            preDexTask.outputs.files.files.each {file ->
-//                project.logger.error "outputs =$file.absolutePath"
-//            }
-//        }
-//        if(dexTask) {
-//            project.logger.error "======dexTask======"
-//            dexTask.inputs.files.files.each {file ->
-//                project.logger.error "inputs =$file.absolutePath"
-//            }
-//
-//            dexTask.outputs.files.files.each {file ->
-//                project.logger.error "outputs =$file.absolutePath"
-//            }
-//        }
-//    }
 }
 
 fixMode {
     debugOn = true  // 是否注入代码
     generatePatch = true    // 是否自动生成补丁
-    patchDir = "D:\\hotfix" // 补丁保存的目录
+    patchDir = "$rootDir" + File.separator + "hotfix_dex" // 补丁保存的目录
     patchName = "patch_dex.jar" // 补丁的名字
 }
 
