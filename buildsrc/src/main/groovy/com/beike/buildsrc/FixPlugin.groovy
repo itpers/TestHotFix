@@ -23,20 +23,15 @@ public class FixPlugin implements Plugin<Project>{
     @Override
     void apply(Project project) {
 
-        project.extensions.create("fixMode", FixExtension)
-        project.extensions.create("fixSignConfig", SignExtension)
+        project.extensions.create("patchJarSignConfig", SignExtension)
 
         project.afterEvaluate {
             FixUtils.init(project)
 
-            //get Extension params
-            def fixMode = project.extensions.findByName("fixMode")
-            debugOn = fixMode.debugOn
-            generatePatch = fixMode.generatePatch
-            patchDir = fixMode.patchDir
-            patchName = fixMode.patchName
+            patchDir = project.rootDir.absolutePath + File.separator + "patch_dex"
+            patchName = "patch_dex.jar"
 
-            def signConfig =  project.extensions.findByName("fixSignConfig") as SignExtension
+            def signConfig =  project.extensions.findByName("patchJarSignConfig") as SignExtension
             storeFile = signConfig.storeFile
             storePassword = signConfig.storePassword
             keyAlias = signConfig.keyAlias
@@ -44,26 +39,26 @@ public class FixPlugin implements Plugin<Project>{
 
             def dexRelease = project.tasks.findByName("transformClassesWithDexForRelease")
             def dexDebug = project.tasks.findByName("transformClassesWithDexForDebug")
+            def dexHotfix = project.tasks.findByName("transformClassesWithDexForHotfix")
             def proguardRelease = project.tasks.findByName("transformClassesAndResourcesWithProguardForRelease")
             def proguardDebug = project.tasks.findByName("transformClassesAndResourcesWithProguardForDebug")
+            def proguardHotfix = project.tasks.findByName("transformClassesAndResourcesWithProguardForHotfix")
 
             if (proguardRelease){
                 proguardReleaseClosure(proguardRelease)
             }
-            if (proguardDebug){
-                proguardDebugClosure(proguardDebug)
+            if (proguardHotfix){
+                proguardHotfixClosure(proguardHotfix)
             }
 
             if (dexRelease){
                 dexReleaseClosure(dexRelease)
             }
 
-            if (dexDebug){
-                if (!debugOn && !generatePatch){
-
-                }else {
-                    dexDebugClosure(dexDebug)
-                }
+            if (dexHotfix){
+                debugOn = true
+                generatePatch = true
+                dexHotfixClosure(dexHotfix)
             }
         }
 
@@ -83,7 +78,7 @@ public class FixPlugin implements Plugin<Project>{
         }
     }
 
-    def proguardDebugClosure = { Task proguardDebug ->
+    def proguardHotfixClosure = { Task proguardDebug ->
         proguardDebug.doFirst {
             File mappingFile = new File(FixUtils.mappingPath)
             if (mappingFile.exists()){
@@ -98,7 +93,7 @@ public class FixPlugin implements Plugin<Project>{
         }
     }
 
-    def dexDebugClosure = { Task dexDebug ->
+    def dexHotfixClosure = { Task dexDebug ->
         dexDebug.outputs.upToDateWhen { false }
 
         dexDebug.doFirst {

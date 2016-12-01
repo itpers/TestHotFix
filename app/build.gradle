@@ -1,6 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: com.beike.buildsrc.FixPlugin
 
+patchJarSignConfig {
+    storeFile file("key_store.jks")
+    storePassword "123123"
+    keyAlias "beike"
+    keyPassword "123123"
+}
+
 android {
     compileSdkVersion 24
     buildToolsVersion "23.0.2"
@@ -12,35 +19,50 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    signingConfigs {
+        release {
+            storeFile file('key_store.jks')
+            storePassword '123123'
+            keyAlias 'beike'
+            keyPassword '123123'
+        }
+
+        debug {
+            storeFile file('key_store.jks')
+            storePassword '123123'
+            keyAlias 'beike'
+            keyPassword '123123'
+        }
+
+        hotfix{
+            storeFile file('key_store.jks')
+            storePassword '123123'
+            keyAlias 'beike'
+            keyPassword '123123'
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            signingConfig signingConfigs.release
+
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        debug {
-            minifyEnabled false
+
+        hotfix{
+            signingConfig signingConfigs.hotfix
+
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-}
-
-fixMode {
-    debugOn = true  // 是否注入代码
-    generatePatch = true    // 是否自动生成补丁
-    patchDir = "$rootDir" + File.separator + "patch_dex" // 补丁保存的目录
-    patchName = "patch_dex.jar" // 补丁的名字
-}
-
-fixSignConfig {
-    storeFile = new File(rootDir,"key_store.jks")
-    storePassword = "123123"
-    keyAlias = "beike"
-    keyPassword = "123123"
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.2.1'
-    compile project(path: ':hotfixlib')
+    compile project(path: ':hotfix')
 }

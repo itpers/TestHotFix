@@ -8586,20 +8586,20 @@ android.support.v7.widget.ViewUtils -> android.support.v7.widget.ay:
     void computeFitSystemWindows(android.view.View,android.graphics.Rect,android.graphics.Rect) -> a
     void makeOptionalFitsSystemWindows(android.view.View) -> b
     void <clinit>() -> <clinit>
-com.beike.hotfixlib.AssetsUtil -> com.beike.a.a:
+com.beike.hotfix.AssetsUtil -> com.beike.a.a:
     void copyAssets(android.content.Context,java.lang.String,java.lang.String) -> a
-com.beike.hotfixlib.HotPatch -> com.beike.a.b:
+com.beike.hotfix.HotPatch -> com.beike.a.b:
     android.content.Context mContext -> a
-    com.beike.hotfixlib.SignatureVerify signatureCheck -> b
+    com.beike.hotfix.SignatureVerify signatureCheck -> b
     void init(android.content.Context) -> a
     void inject(java.lang.String,boolean) -> a
     boolean hasDexClassLoader() -> a
     void injectDexClassLoader(java.lang.String) -> a
-com.beike.hotfixlib.ReflectUtil -> com.beike.a.c:
+com.beike.hotfix.ReflectUtil -> com.beike.a.c:
     java.lang.Object getField(java.lang.Class,java.lang.String,java.lang.Object) -> a
     void setField(java.lang.Class,java.lang.String,java.lang.Object,java.lang.Object) -> a
     java.lang.Object combineArray(java.lang.Object,java.lang.Object) -> a
-com.beike.hotfixlib.SignatureVerify -> com.beike.a.d:
+com.beike.hotfix.SignatureVerify -> com.beike.a.d:
     javax.security.auth.x500.X500Principal DEBUG_DN -> a
     boolean mDebuggable -> b
     java.security.PublicKey mPublicKey -> c

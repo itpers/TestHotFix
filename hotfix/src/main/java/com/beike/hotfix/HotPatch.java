@@ -1,4 +1,4 @@
-package com.beike.hotfixlib;
+package com.beike.hotfix;
 
 import android.content.Context;
 import android.util.Log;
@@ -59,15 +59,6 @@ public class HotPatch {
         }
     }
 
-    private static boolean hasLexClassLoader(){
-        try {
-            Class.forName("dalvik.system.LexClassLoader");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
-
     private static void injectDexClassLoader(String patch){
 
         try{
@@ -79,7 +70,7 @@ public class HotPatch {
 
             //获取patch_dex.jar的dexElements (需要把patch_dex.jar先加载进去)
             String dexOpt = mContext.getDir("dexopt", Context.MODE_PRIVATE).getAbsolutePath();
-            DexClassLoader dexClassLoader = new DexClassLoader(patch, dexOpt, dexOpt, mContext.getClassLoader());
+            DexClassLoader dexClassLoader = new DexClassLoader(patch, dexOpt, patch, mContext.getClassLoader());
             Object patchPathList = ReflectUtil.getField(cl, "pathList", dexClassLoader);
             Object patchDexElements = ReflectUtil.getField(patchPathList.getClass(), "dexElements", patchPathList);
 

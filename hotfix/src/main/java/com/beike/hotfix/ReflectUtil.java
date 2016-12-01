@@ -1,4 +1,4 @@
-package com.beike.hotfixlib;
+package com.beike.hotfix;
 
 import android.util.Log;
 

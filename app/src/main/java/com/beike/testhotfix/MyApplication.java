@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
-import com.beike.hotfixlib.HotPatch;
+import com.beike.hotfix.HotPatch;
 
 /**
  * Created by liupeng_a on 2016/11/24.

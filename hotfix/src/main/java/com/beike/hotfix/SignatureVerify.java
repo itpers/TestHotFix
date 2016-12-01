@@ -1,4 +1,4 @@
-package com.beike.hotfixlib;
+package com.beike.hotfix;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;

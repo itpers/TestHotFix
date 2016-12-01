@@ -1,1 +1,1 @@
-include ':app', ':hotfixlib', ':hackdex', ':buildsrc'
+include ':app', ':hotfix', ':hackdex', ':buildsrc'

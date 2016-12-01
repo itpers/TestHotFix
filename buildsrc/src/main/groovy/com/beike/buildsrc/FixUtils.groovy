@@ -19,7 +19,7 @@ public class FixUtils {
     //匹配jar包的路径，如果包含集合中的路径，不注入代码，不生成MD5
     static List noProcessJarPath = ['com.android.support', 'com' + File.separator +'android' + File.separator +'support' + File.separator]
     static List noProcessClsPath = ['android' + File.separator +'support' + File.separator, '$', 'R.class', 'BuildConfig.class']
-    static List noProcessClsName = ['com.beike.hotfixlib.AssetsUtil', 'com.beike.hotfixlib.HotPatch', 'com.beike.hotfixlib.ReflectUtil', 'com.beike.hotfixlib.SignatureVerify', 'com.beike.testhotfix.MyApplication']
+    static List noProcessClsName = ['com.beike.hotfix.AssetsUtil', 'com.beike.hotfix.HotPatch', 'com.beike.hotfix.ReflectUtil', 'com.beike.hotfix.SignatureVerify', 'com.beike.testhotfix.MyApplication']
 
     static String hashPath;
     static String mappingPath;
