@@ -8593,7 +8593,8 @@ com.beike.hotfix.HotPatch -> com.beike.a.b:
     com.beike.hotfix.SignatureVerify signatureCheck -> b
     void init(android.content.Context) -> a
     void inject(java.lang.String,boolean) -> a
-    boolean hasDexClassLoader() -> a
+    boolean hasLexClassLoader() -> a
+    boolean hasDexClassLoader() -> b
     void injectDexClassLoader(java.lang.String) -> a
 com.beike.hotfix.ReflectUtil -> com.beike.a.c:
     java.lang.Object getField(java.lang.Class,java.lang.String,java.lang.Object) -> a

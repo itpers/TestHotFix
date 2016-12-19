@@ -359,8 +359,8 @@ public class FixUtils {
         processJar(file, writer, true, false, null, null, minify)
     }
 
-    static void processJar(File file, boolean inject, boolean generatePath, Map<String, String> md5Map, String patchDir, boolean minify){
-        processJar(file, null, inject, generatePath, md5Map, patchDir, minify)
+    static void processJar(File file, Map<String, String> md5Map, String patchDir, boolean minify){
+        processJar(file, null, true, true, md5Map, patchDir, minify)
     }
 
     static void processJar(File file, Writer writer, boolean inject, boolean generatePath, Map<String, String> md5Map, String patchDir, boolean minify){
@@ -405,8 +405,8 @@ public class FixUtils {
         processDir(file, writer, true, false, null, null, false)
     }
 
-    static void processDir(File file, boolean inject, boolean generatePatch, Map<String, String> md5Map, String patchDir, boolean minify) {
-        processDir(file, null, inject, generatePatch, md5Map, patchDir, minify)
+    static void processDir(File file, Map<String, String> md5Map, String patchDir, boolean minify) {
+        processDir(file, null, true, true, md5Map, patchDir, minify)
     }
 
     static void processDir(File file, Writer writer, boolean inject, boolean generatePatch, Map<String, String> md5Map, String patchDir, boolean minify) {

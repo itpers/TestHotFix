@@ -7,10 +7,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-public class FixPlugin implements Plugin<Project>{
+public class FixPlugin implements Plugin<Project> {
 
-    boolean debugOn
-    boolean generatePatch
     String patchDir
     String patchName
     boolean minify
@@ -31,7 +29,7 @@ public class FixPlugin implements Plugin<Project>{
             patchDir = project.rootDir.absolutePath + File.separator + "patch_dex"
             patchName = "patch_dex.jar"
 
-            def signConfig =  project.extensions.findByName("patchJarSignConfig") as SignExtension
+            def signConfig = project.extensions.findByName("patchJarSignConfig") as SignExtension
             storeFile = signConfig.storeFile
             storePassword = signConfig.storePassword
             keyAlias = signConfig.keyAlias
@@ -44,20 +42,18 @@ public class FixPlugin implements Plugin<Project>{
             def proguardDebug = project.tasks.findByName("transformClassesAndResourcesWithProguardForDebug")
             def proguardHotfix = project.tasks.findByName("transformClassesAndResourcesWithProguardForHotfix")
 
-            if (proguardRelease){
+            if (proguardRelease) {
                 proguardReleaseClosure(proguardRelease)
             }
-            if (proguardHotfix){
+            if (proguardHotfix) {
                 proguardHotfixClosure(proguardHotfix)
             }
 
-            if (dexRelease){
+            if (dexRelease) {
                 dexReleaseClosure(dexRelease)
             }
 
-            if (dexHotfix){
-                debugOn = true
-                generatePatch = true
+            if (dexHotfix) {
                 dexHotfixClosure(dexHotfix)
             }
         }
@@ -69,7 +65,6 @@ public class FixPlugin implements Plugin<Project>{
             minify = true;
         }
 
-        //copy mapping.txt to app rootDir
         proguardRelease.doLast {
             File file = new File("$project.buildDir" + File.separator + "outputs" + File.separator + "mapping" + File.separator + "release" + File.separator + "mapping.txt")
             if (file.exists()) {
@@ -81,11 +76,11 @@ public class FixPlugin implements Plugin<Project>{
     def proguardHotfixClosure = { Task proguardDebug ->
         proguardDebug.doFirst {
             File mappingFile = new File(FixUtils.mappingPath)
-            if (mappingFile.exists()){
-                def transformTask = (TransformTask)proguardDebug
-                def transform = (ProGuardTransform)transformTask.getTransform()
+            if (mappingFile.exists()) {
+                def transformTask = (TransformTask) proguardDebug
+                def transform = (ProGuardTransform) transformTask.getTransform()
                 transform.applyTestedMapping(mappingFile)
-            }else {
+            } else {
                 String tips = "mapping.txt not found, you can run 'Generate Signed Apk' with release and minify to generate a mapping, or setting generatePath false"
                 throw new IllegalStateException(tips)
             }
@@ -98,47 +93,41 @@ public class FixPlugin implements Plugin<Project>{
 
         dexDebug.doFirst {
             Map<String, String> md5Map
-            //是否生成补丁包
-            if (generatePatch) {
-                //clear previous patch
-                File file = new File(patchDir)
-                if (file.exists()){
-                    FixUtils.cleanDirectory(file)
-                }
 
-                //resolve hash.txt (entry-> className:md5)
-                File hashFile = new File(FixUtils.hashPath)
-                if (hashFile.exists()){
-                    md5Map = FixUtils.resolveHashFile(hashFile)
-                } else {
-                    String tips = "hash.txt not found, you must run 'Generate Signed Apk' at first or setting generatePath false"
-                    throw new IllegalStateException(tips)
-                }
-
+            File patchFile = new File(patchDir)
+            if (patchFile.exists()) {
+                FixUtils.cleanDirectory(patchFile)
             }
 
-            if (minify){
+            File hashFile = new File(FixUtils.hashPath)
+            if (hashFile.exists()) {
+                md5Map = FixUtils.resolveHashFile(hashFile)
+            } else {
+                String tips = "hash.txt not found, you must run 'Generate Signed Apk' at first or setting generatePath false"
+                throw new IllegalStateException(tips)
+            }
+
+
+            if (minify) {
                 dexDebug.inputs.files.files.each { File file ->
-                    file.eachFileRecurse(FileType.FILES, {File f ->
-                        if (f.absolutePath.endsWith('.jar')){
-                            FixUtils.processJar(f, debugOn, generatePatch, md5Map, patchDir, true)
+                    file.eachFileRecurse(FileType.FILES, { File f ->
+                        if (f.absolutePath.endsWith('.jar')) {
+                            FixUtils.processJar(f, md5Map, patchDir, true)
                         }
                     })
                 }
-            }else {
-                dexDebug.inputs.files.files.each {File file ->
-                    if (file.name.endsWith('.jar') && FixUtils.shouldProcessJar(file.absolutePath)){
-                        FixUtils.processJar(file, debugOn, generatePatch, md5Map, patchDir, false)
-                    }else if (file.isDirectory()){
-                        FixUtils.processDir(file, debugOn, generatePatch, md5Map, patchDir, false)
+            } else {
+                dexDebug.inputs.files.files.each { File file ->
+                    if (file.name.endsWith('.jar') && FixUtils.shouldProcessJar(file.absolutePath)) {
+                        FixUtils.processJar(file, md5Map, patchDir, false)
+                    } else if (file.isDirectory()) {
+                        FixUtils.processDir(file, md5Map, patchDir, false)
                     }
                 }
             }
 
-            if (generatePatch){
-                FixUtils.dx(project, patchDir, patchName)
-                FixUtils.signApk(new File(patchDir, patchName),storeFile,keyPassword,storePassword,keyAlias)
-            }
+            FixUtils.dx(project, patchDir, patchName)
+            FixUtils.signApk(new File(patchDir, patchName), storeFile, keyPassword, storePassword, keyAlias)
         }
     }
 
@@ -154,19 +143,19 @@ public class FixPlugin implements Plugin<Project>{
 
             // if minify, outputs always is endsWith .jar in "build/intermediates/transforms/proguard/……"
             // else, inputs directory path is "build/intermediates/classes/……"
-            if (minify){
+            if (minify) {
                 dexRelease.inputs.files.files.each { File file ->
-                    file.eachFileRecurse(FileType.FILES, {File f ->
-                        if (f.absolutePath.endsWith('.jar')){
+                    file.eachFileRecurse(FileType.FILES, { File f ->
+                        if (f.absolutePath.endsWith('.jar')) {
                             FixUtils.processJar(f, writer, true)
                         }
                     })
                 }
-            }else {
+            } else {
                 dexRelease.inputs.files.files.each { File file ->
-                    if (file.name.endsWith('.jar') && FixUtils.shouldProcessJar(file.absolutePath)){
+                    if (file.name.endsWith('.jar') && FixUtils.shouldProcessJar(file.absolutePath)) {
                         FixUtils.processJar(file, writer, false)
-                    }else if (file.isDirectory()){
+                    } else if (file.isDirectory()) {
                         FixUtils.processDir(file, writer)
                     }
                 }

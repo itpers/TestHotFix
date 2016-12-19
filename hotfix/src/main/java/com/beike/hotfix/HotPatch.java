@@ -44,9 +44,22 @@ public class HotPatch {
             return;
         }
 
-        if (hasDexClassLoader()) {
+        if (hasLexClassLoader()){
+
+        }else if (hasDexClassLoader()) {
             Log.i(TAG, "inject: have DexClassLoader");
             injectDexClassLoader(patch);
+        }else{
+
+        }
+    }
+
+    private static boolean hasLexClassLoader(){
+        try {
+            Class.forName("dalvik.system.LexClassLoader");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 
