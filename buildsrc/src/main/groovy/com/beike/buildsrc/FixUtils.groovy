@@ -16,6 +16,8 @@ import java.util.zip.ZipEntry
 public class FixUtils {
     static ClassPool classPool = ClassPool.default
 
+    static String STOP_PREVERIFY = "System.out.println(com.beike.hack.StopPreverify.class);"
+
     //匹配jar包的路径，如果包含集合中的路径，不注入代码，不生成MD5
     static List noProcessJarPath = ['com.android.support', 'com' + File.separator +'android' + File.separator +'support' + File.separator]
     static List noProcessClsPath = ['android' + File.separator +'support' + File.separator, '$', 'R.class', 'BuildConfig.class']
@@ -296,10 +298,10 @@ public class FixUtils {
         CtConstructor[] ctConstructors = c.getDeclaredConstructors()
         if (ctConstructors == null || ctConstructors.length == 0){
             CtConstructor constructor = new CtConstructor(new CtClass[0], c)
-            constructor.setBody("{\nSystem.out.println(com.beike.hack.AntilazyLoad.class);\n}")
+            constructor.setBody("{"+ STOP_PREVERIFY + "}")
             c.addConstructor(constructor)
         }else {
-            ctConstructors[0].insertBeforeBody('System.out.println(com.beike.hack.AntilazyLoad.class);')
+            ctConstructors[0].insertBeforeBody(STOP_PREVERIFY)
         }
         c.writeFile(dir)
         c.detach()
