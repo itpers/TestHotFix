@@ -21,25 +21,21 @@ public class FixPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
 
-        project.extensions.create("patchJarSignConfig", SignExtension)
-
         project.afterEvaluate {
             FixUtils.init(project)
 
             patchDir = project.rootDir.absolutePath + File.separator + "patch_dex"
             patchName = "patch_dex.jar"
 
-            def signConfig = project.extensions.findByName("patchJarSignConfig") as SignExtension
+            def signConfig = project.android.signingConfigs.release
             storeFile = signConfig.storeFile
             storePassword = signConfig.storePassword
             keyAlias = signConfig.keyAlias
             keyPassword = signConfig.keyPassword
 
             def dexRelease = project.tasks.findByName("transformClassesWithDexForRelease")
-            def dexDebug = project.tasks.findByName("transformClassesWithDexForDebug")
             def dexHotfix = project.tasks.findByName("transformClassesWithDexForHotfix")
             def proguardRelease = project.tasks.findByName("transformClassesAndResourcesWithProguardForRelease")
-            def proguardDebug = project.tasks.findByName("transformClassesAndResourcesWithProguardForDebug")
             def proguardHotfix = project.tasks.findByName("transformClassesAndResourcesWithProguardForHotfix")
 
             if (proguardRelease) {
