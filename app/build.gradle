@@ -1,12 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: com.beike.buildsrc.FixPlugin
-
-patchJarSignConfig {
-    storeFile file("key_store.jks")
-    storePassword "123123"
-    keyAlias "beike"
-    keyPassword "123123"
-}
+apply plugin: 'com.beike.hotfix'
 
 android {
     compileSdkVersion 24

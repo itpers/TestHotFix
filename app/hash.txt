@@ -1,2 +1,2 @@
-com.beike.testhotfix.a.a-9824d7f89a6a728557a96474de1b2c7b
+com.beike.testhotfix.a.a-84fc326f2c76946a7da2be770e97e729
 com.beike.testhotfix.activity.MainActivity-5ded92f9537c3937fedbd5d99749c125
