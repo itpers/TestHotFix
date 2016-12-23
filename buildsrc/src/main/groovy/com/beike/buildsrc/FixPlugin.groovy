@@ -33,6 +33,8 @@ public class FixPlugin implements Plugin<Project> {
             keyAlias = signConfig.keyAlias
             keyPassword = signConfig.keyPassword
 
+            println 'dddddd'
+
             def dexRelease = project.tasks.findByName("transformClassesWithDexForRelease")
             def dexHotfix = project.tasks.findByName("transformClassesWithDexForHotfix")
             def proguardRelease = project.tasks.findByName("transformClassesAndResourcesWithProguardForRelease")
@@ -158,5 +160,6 @@ public class FixPlugin implements Plugin<Project> {
             }
             writer.close()
         }
+
     }
 }

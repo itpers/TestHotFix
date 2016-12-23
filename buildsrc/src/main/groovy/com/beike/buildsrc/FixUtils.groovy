@@ -372,7 +372,7 @@ public class FixUtils {
         if (inject){
             classPool.appendClassPath(jarDir.absolutePath)
         }
-        jarDir.eachFileRecurse { f ->
+        jarDir.eachFileRecurse( { f ->
             if (f.getName().endsWith('.class') && shouldProcessClass(f.absolutePath, minify)){
                 String className = getClassName(jarDir, f)
                 String md5 = md5(f)
@@ -393,7 +393,7 @@ public class FixUtils {
                     processClass(jarDir.absolutePath, className)
                 }
             }
-        }
+        })
 
         if (inject){
             file.delete()

@@ -81,7 +81,6 @@ public class HotPatch {
             Object basePathList = ReflectUtil.getField(cl, "pathList", patchClassLoader);
             Object baseDexElement = ReflectUtil.getField(basePathList.getClass(), "dexElements", basePathList);
 
-            //获取patch_dex.jar的dexElements (需要把patch_dex.jar先加载进去)
             String dexOpt = mContext.getDir("dexopt", Context.MODE_PRIVATE).getAbsolutePath();
             DexClassLoader dexClassLoader = new DexClassLoader(patch, dexOpt, patch, mContext.getClassLoader());
             Object patchPathList = ReflectUtil.getField(cl, "pathList", dexClassLoader);
@@ -92,6 +91,7 @@ public class HotPatch {
 
             //将合并后的dexElement重新赋值给app的classloader
             ReflectUtil.setField(basePathList.getClass(), "dexElements", basePathList, combineElements);
+
         }catch (Exception e){
             e.printStackTrace();
         }
