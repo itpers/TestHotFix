@@ -33,8 +33,6 @@ public class FixPlugin implements Plugin<Project> {
             keyAlias = signConfig.keyAlias
             keyPassword = signConfig.keyPassword
 
-            println 'dddddd'
-
             def dexRelease = project.tasks.findByName("transformClassesWithDexForRelease")
             def dexHotfix = project.tasks.findByName("transformClassesWithDexForHotfix")
             def proguardRelease = project.tasks.findByName("transformClassesAndResourcesWithProguardForRelease")
@@ -79,7 +77,7 @@ public class FixPlugin implements Plugin<Project> {
                 def transform = (ProGuardTransform) transformTask.getTransform()
                 transform.applyTestedMapping(mappingFile)
             } else {
-                String tips = "mapping.txt not found, you can run 'Generate Signed Apk' with release and minify to generate a mapping, or setting generatePath false"
+                String tips = "没有mapping.txt, 请先运行assembleRelease生成mapping.txt文件"
                 throw new IllegalStateException(tips)
             }
             minify = true
@@ -101,7 +99,7 @@ public class FixPlugin implements Plugin<Project> {
             if (hashFile.exists()) {
                 md5Map = FixUtils.resolveHashFile(hashFile)
             } else {
-                String tips = "hash.txt not found, you must run 'Generate Signed Apk' at first or setting generatePath false"
+                String tips = "没有hash.txt, 请先运行assembleRelease生成hash.txt文件"
                 throw new IllegalStateException(tips)
             }
 
@@ -134,13 +132,11 @@ public class FixPlugin implements Plugin<Project> {
         // http://stackoverflow.com/questions/7289874/resetting-the-up-to-date-property-of-gradle-tasks
         dexRelease.outputs.upToDateWhen { false }
 
-        //generate hash.txt and inject code in .class
         dexRelease.doFirst {
             File hashFile = FixUtils.createHashFile()
             def writer = hashFile.newPrintWriter()
 
-            // if minify, outputs always is endsWith .jar in "build/intermediates/transforms/proguard/……"
-            // else, inputs directory path is "build/intermediates/classes/……"
+            // 打开混淆，编译后文件路径 "build/intermediates/transforms/proguard/……"
             if (minify) {
                 dexRelease.inputs.files.files.each { File file ->
                     file.eachFileRecurse(FileType.FILES, { File f ->
@@ -150,6 +146,7 @@ public class FixPlugin implements Plugin<Project> {
                     })
                 }
             } else {
+                // 未开混淆编译后文件路径 "build/intermediates/classes/……"
                 dexRelease.inputs.files.files.each { File file ->
                     if (file.name.endsWith('.jar') && FixUtils.shouldProcessJar(file.absolutePath)) {
                         FixUtils.processJar(file, writer, false)
